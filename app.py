@@ -3,11 +3,12 @@ import pandas as pd
 from pathlib import Path
 
 # --------------------------------------------------
-# PAGE SETTINGS
+# PAGE CONFIG
 # --------------------------------------------------
 
 st.set_page_config(
     page_title="Business Sales Performance Analytics",
+    page_icon="📊",
     layout="wide"
 )
 
@@ -28,65 +29,37 @@ if not excel_files:
     st.error("Excel workbook not found.")
     st.stop()
 
-required_sheets = {
-    "Dashboard",
-    "Top Products",
-    "Country Analysis",
-    "Monthly Trend"
-}
-
-FILE = None
-
-for file in excel_files:
-    try:
-        workbook = pd.ExcelFile(file)
-        sheets = set(workbook.sheet_names)
-
-        if required_sheets.issubset(sheets):
-            FILE = file
-            break
-
-    except Exception:
-        pass
-
-if FILE is None:
-    st.error("Required Business Sales Analysis workbook was not found.")
-    st.stop()
+FILE = excel_files[0]
 
 # --------------------------------------------------
-# LOAD EXCEL SHEETS
+# LOAD EXCEL
 # --------------------------------------------------
 
-@st.cache_data
-def load_data(file_path):
+try:
 
-    dashboard = pd.read_excel(
-        file_path,
-        sheet_name="Dashboard"
+    dashboard_raw = pd.read_excel(
+        FILE,
+        sheet_name="Dashboard",
+        header=None
     )
 
     products = pd.read_excel(
-        file_path,
+        FILE,
         sheet_name="Top Products"
     )
 
     countries = pd.read_excel(
-        file_path,
+        FILE,
         sheet_name="Country Analysis"
     )
 
     monthly = pd.read_excel(
-        file_path,
+        FILE,
         sheet_name="Monthly Trend"
     )
 
-    return dashboard, products, countries, monthly
-
-
-try:
-    dashboard, products, countries, monthly = load_data(FILE)
-
 except Exception as e:
+
     st.error("Unable to read the Excel workbook.")
     st.write(str(e))
     st.stop()
@@ -95,85 +68,109 @@ except Exception as e:
 # CLEAN COLUMN NAMES
 # --------------------------------------------------
 
-def clean_columns(df):
-
-    df.columns = (
-        df.columns
-        .astype(str)
-        .str.strip()
-        .str.replace("\n", " ", regex=False)
-    )
-
-    return df
-
-
-dashboard = clean_columns(dashboard)
-products = clean_columns(products)
-countries = clean_columns(countries)
-monthly = clean_columns(monthly)
-
-# --------------------------------------------------
-# CLEAN DATA
-# --------------------------------------------------
-
-for column in ["Revenue", "Quantity"]:
-    if column in products.columns:
-        products[column] = pd.to_numeric(
-            products[column],
-            errors="coerce"
-        )
-
-for column in ["Revenue", "Quantity", "Orders"]:
-    if column in countries.columns:
-        countries[column] = pd.to_numeric(
-            countries[column],
-            errors="coerce"
-        )
-
-for column in ["Revenue", "Quantity"]:
-    if column in monthly.columns:
-        monthly[column] = pd.to_numeric(
-            monthly[column],
-            errors="coerce"
-        )
-
-# --------------------------------------------------
-# GET KPI VALUES FROM DASHBOARD SHEET
-# --------------------------------------------------
-
-dashboard = dashboard.dropna(
-    subset=["Metric"]
-)
-
-dashboard["Metric"] = (
-    dashboard["Metric"]
+products.columns = (
+    products.columns
     .astype(str)
     .str.strip()
 )
 
-dashboard["Value"] = pd.to_numeric(
-    dashboard["Value"],
-    errors="coerce"
+countries.columns = (
+    countries.columns
+    .astype(str)
+    .str.strip()
 )
 
+monthly.columns = (
+    monthly.columns
+    .astype(str)
+    .str.strip()
+)
 
-def get_kpi(metric_name):
-    row = dashboard[
-        dashboard["Metric"].str.lower()
-        == metric_name.lower()
-    ]
+# --------------------------------------------------
+# CLEAN NUMERIC DATA
+# --------------------------------------------------
 
-    if not row.empty:
-        return row.iloc[0]["Value"]
+for col in ["Revenue", "Quantity"]:
 
-    return 0
+    if col in products.columns:
+        products[col] = pd.to_numeric(
+            products[col],
+            errors="coerce"
+        )
 
+for col in ["Revenue", "Quantity", "Orders"]:
 
-total_revenue = get_kpi("Total Revenue")
-total_quantity = get_kpi("Total Quantity")
-total_orders = get_kpi("Orders")
-total_customers = get_kpi("Customers")
-total_countries = get_kpi("Countries")
+    if col in countries.columns:
+        countries[col] = pd.to_numeric(
+            countries[col],
+            errors="coerce"
+        )
+
+for col in ["Revenue", "Quantity"]:
+
+    if col in monthly.columns:
+        monthly[col] = pd.to_numeric(
+            monthly[col],
+            errors="coerce"
+        )
+
+# --------------------------------------------------
+# READ KPI VALUES FROM DASHBOARD
+# --------------------------------------------------
+
+kpis = {}
+
+for i in range(len(dashboard_raw)):
+
+    row = dashboard_raw.iloc[i].astype(str).str.strip().tolist()
+
+    for j in range(len(row) - 1):
+
+        metric = row[j]
+
+        value = row[j + 1]
+
+        if metric in [
+            "Total Revenue",
+            "Total Quantity",
+            "Orders",
+            "Customers",
+            "Countries"
+        ]:
+
+            try:
+                kpis[metric] = float(value)
+            except:
+                pass
+
+# --------------------------------------------------
+# KPI VALUES
+# --------------------------------------------------
+
+total_revenue = kpis.get(
+    "Total Revenue",
+    0
+)
+
+total_quantity = kpis.get(
+    "Total Quantity",
+    0
+)
+
+total_orders = kpis.get(
+    "Orders",
+    0
+)
+
+total_customers = kpis.get(
+    "Customers",
+    0
+)
+
+total_countries = kpis.get(
+    "Countries",
+    0
+)
 
 # --------------------------------------------------
 # KEY PERFORMANCE INDICATORS
@@ -181,29 +178,29 @@ total_countries = get_kpi("Countries")
 
 st.subheader("Key Performance Indicators")
 
-col1, col2, col3, col4, col5 = st.columns(5)
+c1, c2, c3, c4, c5 = st.columns(5)
 
-col1.metric(
+c1.metric(
     "Total Revenue",
     f"{total_revenue:,.2f}"
 )
 
-col2.metric(
+c2.metric(
     "Total Quantity",
     f"{total_quantity:,.0f}"
 )
 
-col3.metric(
+c3.metric(
     "Orders",
     f"{total_orders:,.0f}"
 )
 
-col4.metric(
+c4.metric(
     "Customers",
     f"{total_customers:,.0f}"
 )
 
-col5.metric(
+c5.metric(
     "Countries",
     f"{total_countries:,.0f}"
 )
@@ -217,100 +214,63 @@ st.divider()
 st.subheader("Business Insights")
 
 # Top Product
+if not products.empty:
 
-if (
-    not products.empty
-    and "Revenue" in products.columns
-    and "Description" in products.columns
-):
+    top_product = products.loc[
+        products["Revenue"].idxmax()
+    ]
 
-    products_valid = products.dropna(
-        subset=["Revenue"]
+    top_product_name = str(
+        top_product["Description"]
     )
 
-    if not products_valid.empty:
-
-        top_product = products_valid.loc[
-            products_valid["Revenue"].idxmax()
-        ]
-
-        top_product_name = str(
-            top_product["Description"]
-        )
-
-        top_product_revenue = float(
-            top_product["Revenue"]
-        )
-
-    else:
-        top_product_name = "N/A"
-        top_product_revenue = 0
+    top_product_revenue = float(
+        top_product["Revenue"]
+    )
 
 else:
+
     top_product_name = "N/A"
     top_product_revenue = 0
 
 
 # Top Country
+if not countries.empty:
 
-if (
-    not countries.empty
-    and "Revenue" in countries.columns
-    and "Country" in countries.columns
-):
+    top_country = countries.loc[
+        countries["Revenue"].idxmax()
+    ]
 
-    countries_valid = countries.dropna(
-        subset=["Revenue"]
+    top_country_name = str(
+        top_country["Country"]
     )
 
-    if not countries_valid.empty:
-
-        top_country = countries_valid.loc[
-            countries_valid["Revenue"].idxmax()
-        ]
-
-        top_country_name = str(
-            top_country["Country"]
-        )
-
-        top_country_revenue = float(
-            top_country["Revenue"]
-        )
-
-    else:
-        top_country_name = "N/A"
-        top_country_revenue = 0
+    top_country_revenue = float(
+        top_country["Revenue"]
+    )
 
 else:
+
     top_country_name = "N/A"
     top_country_revenue = 0
 
 
 # Best Month
+if not monthly.empty:
 
-if (
-    not monthly.empty
-    and "Revenue" in monthly.columns
-    and "Month" in monthly.columns
-):
-
-    monthly_valid = monthly.dropna(
-        subset=["Revenue"]
-    ).copy()
-
-    monthly_valid["Month"] = pd.to_datetime(
-        monthly_valid["Month"],
+    monthly["Month"] = pd.to_datetime(
+        monthly["Month"],
         errors="coerce"
     )
 
-    monthly_valid = monthly_valid.dropna(
+    valid_months = monthly.dropna(
         subset=["Month"]
     )
 
-    if not monthly_valid.empty:
+    if not valid_months.empty:
 
-        best_month = monthly_valid.loc[
-            monthly_valid["Revenue"].idxmax()
+        best_month = valid_months.loc[
+            valid_months["Revenue"].idxmax()
         ]
 
         best_month_name = best_month[
@@ -322,24 +282,29 @@ if (
         )
 
     else:
+
         best_month_name = "N/A"
         best_month_revenue = 0
 
 else:
+
     best_month_name = "N/A"
     best_month_revenue = 0
 
 
 # Average Order Value
+if total_orders > 0:
 
-average_order_value = (
-    total_revenue / total_orders
-    if total_orders > 0
-    else 0
-)
+    average_order_value = (
+        total_revenue / total_orders
+    )
+
+else:
+
+    average_order_value = 0
 
 # --------------------------------------------------
-# INSIGHT METRICS
+# INSIGHT CARDS
 # --------------------------------------------------
 
 i1, i2, i3, i4 = st.columns(4)
@@ -378,11 +343,7 @@ st.divider()
 
 st.subheader("Top 10 Products by Revenue")
 
-if (
-    not products.empty
-    and "Description" in products.columns
-    and "Revenue" in products.columns
-):
+if not products.empty:
 
     top_products = (
         products
@@ -391,14 +352,13 @@ if (
             ascending=False
         )
         .head(10)
-        .copy()
     )
 
-    chart_data = top_products.set_index(
-        "Description"
-    )["Revenue"]
-
-    st.bar_chart(chart_data)
+    st.bar_chart(
+        top_products.set_index(
+            "Description"
+        )["Revenue"]
+    )
 
     st.dataframe(
         top_products,
@@ -416,13 +376,9 @@ st.divider()
 # COUNTRY ANALYSIS
 # --------------------------------------------------
 
-st.subheader("Top Countries by Revenue")
+st.subheader("Top 10 Countries by Revenue")
 
-if (
-    not countries.empty
-    and "Country" in countries.columns
-    and "Revenue" in countries.columns
-):
+if not countries.empty:
 
     top_countries = (
         countries
@@ -431,14 +387,13 @@ if (
             ascending=False
         )
         .head(10)
-        .copy()
     )
 
-    country_chart = top_countries.set_index(
-        "Country"
-    )["Revenue"]
-
-    st.bar_chart(country_chart)
+    st.bar_chart(
+        top_countries.set_index(
+            "Country"
+        )["Revenue"]
+    )
 
     st.dataframe(
         top_countries,
@@ -458,26 +413,11 @@ st.divider()
 
 st.subheader("Monthly Revenue Trend")
 
-if (
-    not monthly.empty
-    and "Month" in monthly.columns
-    and "Revenue" in monthly.columns
-):
+if not monthly.empty:
 
-    monthly_chart = monthly.copy()
-
-    monthly_chart["Month"] = pd.to_datetime(
-        monthly_chart["Month"],
-        errors="coerce"
-    )
-
-    monthly_chart = monthly_chart.dropna(
+    monthly_chart = monthly.dropna(
         subset=["Month"]
-    )
-
-    monthly_chart = monthly_chart.sort_values(
-        "Month"
-    )
+    ).sort_values("Month")
 
     st.line_chart(
         monthly_chart.set_index(
@@ -503,9 +443,8 @@ st.divider()
 
 st.subheader("Data Explorer")
 
-tab1, tab2, tab3, tab4 = st.tabs(
+tab1, tab2, tab3 = st.tabs(
     [
-        "Dashboard",
         "Top Products",
         "Country Analysis",
         "Monthly Trend"
@@ -515,7 +454,7 @@ tab1, tab2, tab3, tab4 = st.tabs(
 with tab1:
 
     st.dataframe(
-        dashboard,
+        products,
         use_container_width=True,
         hide_index=True
     )
@@ -523,20 +462,12 @@ with tab1:
 with tab2:
 
     st.dataframe(
-        products,
-        use_container_width=True,
-        hide_index=True
-    )
-
-with tab3:
-
-    st.dataframe(
         countries,
         use_container_width=True,
         hide_index=True
     )
 
-with tab4:
+with tab3:
 
     st.dataframe(
         monthly,
@@ -545,22 +476,22 @@ with tab4:
     )
 
 # --------------------------------------------------
-# DOWNLOAD DATA
+# DOWNLOAD
 # --------------------------------------------------
 
 st.divider()
 
 st.subheader("Download Analysis")
 
-csv_data = products.to_csv(
+csv_file = products.to_csv(
     index=False
 ).encode("utf-8")
 
 st.download_button(
-    label="Download Top Products CSV",
-    data=csv_data,
-    file_name="top_products.csv",
-    mime="text/csv"
+    "Download Top Products CSV",
+    csv_file,
+    "top_products.csv",
+    "text/csv"
 )
 
 st.caption(
