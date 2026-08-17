@@ -105,101 +105,76 @@ for df, columns in [
                 errors="coerce"
             )
 
+# ==============================
+# KEY PERFORMANCE INDICATORS
+# ==============================
 
-# --------------------------------------------------
-# GET KPI VALUES FROM DASHBOARD SHEET
-# --------------------------------------------------
+# Revenue
+if "Revenue" in data_sheet.columns:
+    total_revenue = data_sheet["Revenue"].sum()
+else:
+    total_revenue = (
+        data_sheet["Quantity"] * data_sheet["UnitPrice"]
+    ).sum()
 
-# --------------------------------------------------
-# READ KPI VALUES FROM DASHBOARD SHEET
-# --------------------------------------------------
+# Quantity
+total_quantity = data_sheet["Quantity"].sum()
 
-dashboard_raw = pd.read_excel(
-    FILE,
-    sheet_name="Dashboard",
-    header=None
-)
+# Orders
+if "InvoiceNo" in data_sheet.columns:
+    total_orders = data_sheet["InvoiceNo"].nunique()
+else:
+    total_orders = len(data_sheet)
 
-kpi = {}
+# Customers
+if "CustomerID" in data_sheet.columns:
+    total_customers = data_sheet["CustomerID"].nunique()
+elif "Customer ID" in data_sheet.columns:
+    total_customers = data_sheet["Customer ID"].nunique()
+else:
+    total_customers = 0
 
-for _, row in dashboard_raw.iterrows():
-
-    row_values = row.astype(str).str.strip().tolist()
-
-    if len(row_values) >= 2:
-
-        metric = row_values[1]
-
-        if metric in [
-            "Total Revenue",
-            "Total Quantity",
-            "Orders",
-            "Customers",
-            "Countries"
-        ]:
-
-            value = row.iloc[2]
-
-            kpi[metric] = value
+# Countries
+if "Country" in data_sheet.columns:
+    total_countries = data_sheet["Country"].nunique()
+else:
+    total_countries = 0
 
 
-total_revenue = float(
-    kpi.get("Total Revenue", 0)
-)
-
-total_quantity = int(
-    float(kpi.get("Total Quantity", 0))
-)
-
-total_orders = int(
-    float(kpi.get("Orders", 0))
-)
-
-total_customers = int(
-    float(kpi.get("Customers", 0))
-)
-
-total_countries = int(
-    float(kpi.get("Countries", 0))
-)
-
-
-# --------------------------------------------------
-# KPI SECTION
-# --------------------------------------------------
+# ==============================
+# DISPLAY KPIs
+# ==============================
 
 st.subheader("Key Performance Indicators")
 
-c1, c2, c3, c4, c5 = st.columns(5)
+col1, col2, col3, col4, col5 = st.columns(5)
 
-c1.metric(
+col1.metric(
     "Total Revenue",
     f"{total_revenue:,.2f}"
 )
 
-c2.metric(
+col2.metric(
     "Total Quantity",
-    f"{total_quantity:,}"
+    f"{total_quantity:,.0f}"
 )
 
-c3.metric(
+col3.metric(
     "Orders",
     f"{total_orders:,}"
 )
 
-c4.metric(
+col4.metric(
     "Customers",
     f"{total_customers:,}"
 )
 
-c5.metric(
+col5.metric(
     "Countries",
     f"{total_countries:,}"
 )
 
-
 st.divider()
-
 
 # --------------------------------------------------
 # BUSINESS INSIGHTS
