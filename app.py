@@ -110,42 +110,58 @@ for df, columns in [
 # GET KPI VALUES FROM DASHBOARD SHEET
 # --------------------------------------------------
 
-try:
+# --------------------------------------------------
+# READ KPI VALUES FROM DASHBOARD SHEET
+# --------------------------------------------------
 
-    kpi = dict(
-        zip(
-            dashboard["Metric"],
-            dashboard["Value"]
-        )
-    )
+dashboard_raw = pd.read_excel(
+    FILE,
+    sheet_name="Dashboard",
+    header=None
+)
 
-    total_revenue = float(
-        kpi.get("Total Revenue", 0)
-    )
+kpi = {}
 
-    total_quantity = int(
-        kpi.get("Total Quantity", 0)
-    )
+for _, row in dashboard_raw.iterrows():
 
-    total_orders = int(
-        kpi.get("Orders", 0)
-    )
+    row_values = row.astype(str).str.strip().tolist()
 
-    total_customers = int(
-        kpi.get("Customers", 0)
-    )
+    if len(row_values) >= 2:
 
-    total_countries = int(
-        kpi.get("Countries", 0)
-    )
+        metric = row_values[1]
 
-except Exception:
+        if metric in [
+            "Total Revenue",
+            "Total Quantity",
+            "Orders",
+            "Customers",
+            "Countries"
+        ]:
 
-    total_revenue = 0
-    total_quantity = 0
-    total_orders = 0
-    total_customers = 0
-    total_countries = 0
+            value = row.iloc[2]
+
+            kpi[metric] = value
+
+
+total_revenue = float(
+    kpi.get("Total Revenue", 0)
+)
+
+total_quantity = int(
+    float(kpi.get("Total Quantity", 0))
+)
+
+total_orders = int(
+    float(kpi.get("Orders", 0))
+)
+
+total_customers = int(
+    float(kpi.get("Customers", 0))
+)
+
+total_countries = int(
+    float(kpi.get("Countries", 0))
+)
 
 
 # --------------------------------------------------
