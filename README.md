@@ -197,7 +197,8 @@ Interested in Data Science, Data Analytics, Machine Learning, and building pract
 
 ### Connect With Me
 
-[GitHub](https://github.com/Naina137) · [LinkedIn](https://www.linkedin.com/in/naina-kumari-06373132b)
+[GitHub]:(https://github.com/Naina137) ·
+[LinkedIn]:(https://www.linkedin.com/in/naina-kumari-06373132b)
 
 Feel free to explore the project, review the source code, or connect with me for collaboration and opportunities.
 
