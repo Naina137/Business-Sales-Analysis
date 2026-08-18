@@ -87,17 +87,26 @@ Product analysis can be downloaded as a CSV file for further analysis.
 
 ### Main Dashboard
 
+Provides an overview of overall business performance through key KPIs such as revenue, quantity, orders, customers, and countries.
+
 ![Business Sales Dashboard](dashboard.png)
 
 ### Revenue Analysis
+
+Highlights the top-performing products based on revenue and provides a clear comparison of product-level sales performance.
+
 
 ![Revenue Analysis](revenue.png)
 
 ### Country Analysis
 
+Presents country-wise revenue performance and highlights the countries contributing the most to overall sales.
+
 ![Country Analysis](country.png)
 
 ### Monthly Revenue Trend
+
+Shows how revenue changes over time and helps identify the strongest-performing months and overall sales patterns.
 
 ![Monthly Revenue Trend](monthly.png)
 
