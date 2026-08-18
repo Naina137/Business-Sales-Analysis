@@ -79,7 +79,7 @@ Users can explore the processed data through:
 
 ### Data Download
 
-Product analysis can be downloaded as a CSV file for further analysis.
+The dashboard includes a download option that allows users to export the Top Products analysis as a CSV file for further analysis.
 
 ---
 
