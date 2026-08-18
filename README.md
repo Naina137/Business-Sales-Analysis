@@ -139,3 +139,40 @@ Business-Sales-Analysis/
 ├── country.png
 ├── monthly.png
 └── Task1_Business_Sales_Analysis-16 (1).xlsx
+
+
+How to Run Locally
+Step 1: Clone the Repository
+git clone https://github.com/Naina137/Business-Sales-Analysis.git
+Step 2: Navigate to the Project Folder
+cd Business-Sales-Analysis
+Step 3: Install Dependencies
+pip install -r requirements.txt
+Step 4: Run the Streamlit Application
+streamlit run app.py
+The application will open automatically in your default browser.
+If it does not open automatically, visit:
+http://localhost:8501
+Make sure the Excel workbook is present in the project folder before running the application.
+Deployment
+The application is deployed using Streamlit Community Cloud.
+Live Dashboard:
+https://business-sales-analysis-gj2e5z4fwgfqmqlr5keivp.streamlit.app⁠
+Future Improvements
+Interactive date and country filters
+Sales forecasting using Machine Learning
+Customer segmentation
+Product category analysis
+Advanced sales visualizations
+Automated business reports
+Predictive sales analytics
+Author
+Naina Kumari
+Computer Science & Engineering — Data Science
+Interested in Data Science, Data Analytics, Machine Learning, and building practical data-driven applications.
+Connect With Me
+GitHub⁠
+LinkedIn⁠
+Feel free to explore the project, review the source code, or connect with me for collaboration and opportunities.
+License
+This project is created for educational and portfolio purposes.
