@@ -140,39 +140,73 @@ Business-Sales-Analysis/
 ├── monthly.png
 └── Task1_Business_Sales_Analysis-16 (1).xlsx
 
+## How to Run Locally
 
-How to Run Locally
-Step 1: Clone the Repository
+Clone the repository and install the required dependencies:
+
+```bash
 git clone https://github.com/Naina137/Business-Sales-Analysis.git
-Step 2: Navigate to the Project Folder
 cd Business-Sales-Analysis
-Step 3: Install Dependencies
 pip install -r requirements.txt
-Step 4: Run the Streamlit Application
+```
+
+Start the Streamlit dashboard:
+
+```bash
 streamlit run app.py
-The application will open automatically in your default browser.
-If it does not open automatically, visit:
+```
+
+The application will open in your default browser. If it does not open automatically, visit:
+
+```text
 http://localhost:8501
-Make sure the Excel workbook is present in the project folder before running the application.
-Deployment
-The application is deployed using Streamlit Community Cloud.
-Live Dashboard:
-https://business-sales-analysis-gj2e5z4fwgfqmqlr5keivp.streamlit.app⁠
-Future Improvements
-Interactive date and country filters
-Sales forecasting using Machine Learning
-Customer segmentation
-Product category analysis
-Advanced sales visualizations
-Automated business reports
-Predictive sales analytics
-Author
-Naina Kumari
-Computer Science & Engineering — Data Science
+```
+
+Make sure the Excel workbook is available in the project folder before running the application.
+
+---
+
+## Deployment
+
+The dashboard is deployed using **Streamlit Community Cloud**.
+
+**Live Application:**  
+[Business Sales Performance Analytics](https://business-sales-analysis-gj2e5z4fwgfqmqlr5keivp.streamlit.app)
+
+---
+
+## Future Improvements
+
+- Interactive date, product, and country filters
+- Machine Learning-based sales forecasting
+- Customer segmentation
+- Product category analysis
+- Advanced interactive visualizations
+- Automated business reports
+- Predictive sales analytics
+
+---
+
+## Author
+
+### Naina Kumari
+
+**Computer Science & Engineering — Data Science**
+
 Interested in Data Science, Data Analytics, Machine Learning, and building practical data-driven applications.
-Connect With Me
-GitHub⁠
-LinkedIn⁠
+
+### Connect With Me
+
+[GitHub](https://github.com/Naina137) · [LinkedIn](https://www.linkedin.com/in/naina-kumari-06373132b)
+
 Feel free to explore the project, review the source code, or connect with me for collaboration and opportunities.
-License
+
+---
+
+## License
+
 This project is created for educational and portfolio purposes.
+
+
+
+
